@@ -17,9 +17,11 @@ namespace Marsqa1Specflow.Pages
         public static By TabProfileBy = By.XPath("//a[@href='/Account/Profile']");
         public static By TabLanguagesBy = By.XPath("//a[@data-tab='first']");
         public static By TabSkillsBy = By.XPath("//a[@data-tab='second']");
-        public static By BtnAddNewBy = By.XPath("//table[1]//div[@class='ui teal button '][(text()='Add New')]");
-        public static By BtnAddBy = By.XPath("//input[@value='Add']");
-        public static By BtnCancelBy = By.XPath("//input[@value='Cancel']");
+        public static By BtnAddNewLanguageBy = By.XPath("//div[@data-tab='first']//table//div[@class='ui teal button '][(text()='Add New')]");
+        public static By BtnAddNewSkillBy = By.XPath("//div[@data-tab='second']//table//div[@class='ui teal button'][(text()='Add New')]");
+        public static By BtnAddLanguageBy = By.XPath("//div[@data-tab='first']//input[@value='Add']");
+        public static By BtnAddSkillBy = By.XPath("//div[@data-tab='second']//input[@value='Add']");
+        public static By BtnCancelLanguageBy = By.XPath("//div[@data-tab='first']//input[@value='Cancel']");
         public static By IconPencilLastBy = By.XPath("//table[1]/tbody[last()]//i[@class='outline write icon']");
         public static By IconRemoveLastBy = By.XPath("//table[1]/tbody[last()]//i[@class='remove icon']");
         public static By FieldLanguageBy = By.XPath("//input[@placeholder='Add Language']");
@@ -33,6 +35,7 @@ namespace Marsqa1Specflow.Pages
 
         // Texts
         public string[] LangDrop = { "Choose Language Level", "Basic", "Conversational", "Fluent", "Native/Bilingual" };
+        public string[] SkillDrop = { "Choose Skill Level", "Beginner", "Intermediate", "Expert" };
         public IDictionary<int, string> tabIndexNames = new Dictionary<int, string>(){
             {1, "first"},
             {2, "second" } };
@@ -51,7 +54,7 @@ namespace Marsqa1Specflow.Pages
 
         public void ClickAddNew()
         {
-            _driver.FindElement(BtnAddNewBy).Click();
+            _driver.FindElement(BtnAddNewLanguageBy).Click();
         }
 
         public bool IsElementPresent(By by)
@@ -86,7 +89,7 @@ namespace Marsqa1Specflow.Pages
         public Tuple<string, string> AddRandomLanguage()
         {
             // Click Add New button
-            _driver.FindElement(BtnAddNewBy).Click();
+            _driver.FindElement(BtnAddNewLanguageBy).Click();
             Thread.Sleep(1000);
 
             string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -98,7 +101,7 @@ namespace Marsqa1Specflow.Pages
             WaitUtil.WaitVisible(_driver, FieldLanguageBy).SendKeys(randomString);
 
             string langLevel = SelectRandomLangLevel(ChooseLanguageBy);
-            _driver.FindElement(BtnAddBy).Click();
+            _driver.FindElement(BtnAddLanguageBy).Click();
             Thread.Sleep(1000);
 
             return new Tuple<string, string> (randomString, langLevel);
@@ -236,6 +239,25 @@ namespace Marsqa1Specflow.Pages
                     break;
             }
             Assert.AreEqual(popupSuccessColor, bgcolor);
+        }
+
+        public void VerifyChooseSkill()
+        {
+            ClickAddNew();
+
+            List<string> list = new List<string>();
+            IList<IWebElement> dropdownList = _driver.FindElements(LanguageOptionsBy);
+            foreach (IWebElement i in dropdownList)
+            {
+                //dropdownListArray[] = i.Text;
+                list.Add(i.Text);
+            }
+            string[] dropdownListArray = list.ToArray();
+            for (int i = 0; i < dropdownList.Count; i++)
+            {
+                Assert.AreEqual(LangDrop[i], dropdownList[i].Text);
+            }
+            // int iRowsCount = driver.FindElements(By.XPath("/html/body/..../table/tbody/tr")).Count;
         }
     }
 }
