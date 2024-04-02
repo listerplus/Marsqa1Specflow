@@ -5,7 +5,7 @@ Verify Languages functionality
 Background:
 	Given User at Profile Page
 
-@tag1
+@regression
 Scenario: Verify Choose Language Level has 4 options
 	And User click Language Tab
 	Then Choose Language dropdown has four level options

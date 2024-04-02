@@ -84,11 +84,11 @@ namespace Marsqa1Specflow.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Verify Choose Language Level has 4 options")]
-        [NUnit.Framework.CategoryAttribute("tag1")]
+        [NUnit.Framework.CategoryAttribute("regression")]
         public virtual void VerifyChooseLanguageLevelHas4Options()
         {
             string[] tagsOfScenario = new string[] {
-                    "tag1"};
+                    "regression"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Verify Choose Language Level has 4 options", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 9
