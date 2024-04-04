@@ -8,6 +8,7 @@ Background:
 @regression
 Scenario: Verify Choose Language Level has 4 options
 	And User click Language Tab
+	When Add New button is pressed
 	Then Choose Language dropdown has four level options
 
 Scenario: Verify user is able to add languages
@@ -23,3 +24,8 @@ Scenario: Verify user is able to delete language
 	And User click Language Tab
 	And Atleast one language present
 	Then User is able to Delete Language
+
+Scenario: Verify user is able to add only 4 languages
+	And User click Language Tab
+	When There are four languages
+	Then User is unable to add more language
