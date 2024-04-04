@@ -24,14 +24,20 @@ namespace Marsqa1Specflow.Pages
         public static By BtnCancelLanguageBy = By.XPath("//div[@data-tab='first']//input[@value='Cancel']");
         public static By IconPencilLastBy = By.XPath("//table[1]/tbody[last()]//i[@class='outline write icon']");
         public static By IconRemoveLastBy = By.XPath("//table[1]/tbody[last()]//i[@class='remove icon']");
+        public static By IconPencilLastSkillBy = By.XPath("//div[@data-tab='second']//table/tbody[last()]//i[@class='outline write icon']");
+        public static By IconRemoveLastSkillBy = By.XPath("//div[@data-tab='second']//table/tbody[last()]//i[@class='remove icon']");
         public static By FieldLanguageBy = By.XPath("//input[@placeholder='Add Language']");
         public static By ChooseLanguageBy = By.XPath("//select[@class='ui dropdown']");
         public static By FieldLanguageLastBy = By.XPath("//table[1]/tbody[last()]//input[@placeholder='Add Language']");
         public static By ChooseLanguageLastBy = By.XPath("//table[1]/tbody[last()]//select[@class='ui dropdown']");
+        public static By FieldSkillBy = By.XPath("//input[@placeholder='Add Skill']");
+        public static By ChooseSkillBy = By.XPath("//select[@name='level']");
         public static By BtnUpdateBy = By.XPath("//input[@value='Update']");
         public static By LanguageOptionsBy = By.XPath("//select[@class='ui dropdown']/option");
+        public static By SkillOptionsBy = By.XPath("//div[@data-tab='second']//select[@name='level']/option");
         public static By LanguageRowsBy = By.XPath("//div[@data-tab='first']//table/tbody");
         public static By SkillsRowsBy = By.XPath("//div[@data-tab='second']//table/tbody");
+        public static By ActiveTabBy = By.XPath("//a[@class='item active']");
 
         // Texts
         public string[] LangDrop = { "Choose Language Level", "Basic", "Conversational", "Fluent", "Native/Bilingual" };
@@ -75,15 +81,15 @@ namespace Marsqa1Specflow.Pages
             return IsElementPresent(TabProfileBy);
         }
 
-        public string SelectRandomLangLevel(By by)
+        public string SelectRandomLevel(By by, string[] dropDownList)
         {
             // Make sure Add New Button is clicked and Language Level visible
             // Select any Language Level
             Random random = new Random();
-            int index = random.Next(1, LangDrop.Count());
+            int index = random.Next(1, dropDownList.Count());
             SelectElement dropDown = new SelectElement(_driver.FindElement(by));
-            dropDown.SelectByValue(LangDrop[index]);
-            return LangDrop[index];
+            dropDown.SelectByValue(dropDownList[index]);
+            return dropDownList[index];
         }
 
         public Tuple<string, string> AddRandomLanguage()
@@ -100,7 +106,7 @@ namespace Marsqa1Specflow.Pages
                                       .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
             WaitUtil.WaitVisible(_driver, FieldLanguageBy).SendKeys(randomString);
 
-            string langLevel = SelectRandomLangLevel(ChooseLanguageBy);
+            string langLevel = SelectRandomLevel(ChooseLanguageBy, LangDrop);
             _driver.FindElement(BtnAddLanguageBy).Click();
             Thread.Sleep(1000);
 
@@ -108,24 +114,46 @@ namespace Marsqa1Specflow.Pages
             // https://www.c-sharpcorner.com/UploadFile/9b86d4/how-to-return-multiple-values-from-a-function-in-C-Sharp/
         }
 
-        public bool IsLanguagePresent(string language, string level, int rowNum = 0)
+        public Tuple<string, string> AddRandomSkill()
+        {
+            // Click Add New button
+            _driver.FindElement(BtnAddNewSkillBy).Click();
+            Thread.Sleep(1000);
+
+            string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+            Random random = new Random();
+            int length = random.Next(3, 21); // 21 is exclusive, so it generates number from 3 to 20
+            // Generate the random string
+            string randomString = new string(Enumerable.Range(0, length)
+                                      .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
+            WaitUtil.WaitVisible(_driver, FieldSkillBy).SendKeys(randomString);
+
+            string skillLevel = SelectRandomLevel(ChooseSkillBy, SkillDrop);
+            _driver.FindElement(BtnAddSkillBy).Click();
+            Thread.Sleep(1000);
+
+            return new Tuple<string, string>(randomString, skillLevel);
+            // https://www.c-sharpcorner.com/UploadFile/9b86d4/how-to-return-multiple-values-from-a-function-in-C-Sharp/
+        }
+
+        public bool IsLanguageOrSkillPresent(int tabIndex, string name, string level, int rowNum = 0) // 1: Languages, 2: Skills
         {
             bool isPresent = false;
-            string getLang, getLevel;
-            Console.WriteLine($"[To check] Lang: {language}, Level: {level}");
+            string getName, getLevel;
+            Console.WriteLine($"[To check] Name: {name}, Level: {level}");
 
             if (rowNum == 0)
             {
-                for (int i = 1; i < 5; i++)
+                for (int i = 1; i <= GetRowCount(tabIndex); i++)
                 {
                     try
                     {
-                        getLang = _driver.FindElement(By.XPath($"//div[@data-tab='first']//table/tbody[{i}]/tr/td[1]")).Text;
-                        getLevel = _driver.FindElement(By.XPath($"//div[@data-tab='first']//table/tbody[{i}]/tr/td[2]")).Text;
+                        getName = _driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{i}]/tr/td[1]")).Text;
+                        getLevel = _driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{i}]/tr/td[2]")).Text;
                         //Console.WriteLine($"Lang: {getLang}, Level: {getLevel}");
-                        if (language.Equals(getLang) && (level.Equals(getLevel)))
+                        if (name.Equals(getName) && (level.Equals(getLevel)))
                         {
-                            Console.WriteLine($"Checking Language tries: {i}");
+                            Console.WriteLine($"Checking Name tries: {i}");
                             isPresent = true;
                             break;
                         }
@@ -138,33 +166,42 @@ namespace Marsqa1Specflow.Pages
             }
             else
             {
-                getLang = WaitUtil.WaitVisible(_driver, By.XPath($"//div[@data-tab='first']//table/tbody[{rowNum}]/tr/td[1]")).Text;
-                getLevel = WaitUtil.WaitVisible(_driver, By.XPath($"//div[@data-tab='first']//table/tbody[{rowNum}]/tr/td[2]")).Text;
-                Console.WriteLine($"Retrieved Lang [row {rowNum}]: {getLang}, Level: {getLevel}");
-                if (language.Equals(getLang) && (level.Equals(getLevel))) { isPresent = true; }
-                getLevel = WaitUtil.WaitVisible(_driver, By.XPath($"//div[@data-tab='first']//table/tbody[{rowNum}]/tr/td[2]")).Text;
+                getName = WaitUtil.WaitVisible(_driver, By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{rowNum}]/tr/td[1]")).Text;
+                getLevel = WaitUtil.WaitVisible(_driver, By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{rowNum}]/tr/td[2]")).Text;
+                Console.WriteLine($"Retrieved [row {rowNum}]: {getName}, Level: {getLevel}");
+                if (name.Equals(getName) && (level.Equals(getLevel))) { isPresent = true; }
             }
             
             return isPresent;
         }
 
-        public void VerifyChooseLanguage()
+        public void VerifyDropdownOptions(By by, string[] OptionsList)
         {
-            ClickAddNew();
-
             List<string> list = new List<string>();
-            IList<IWebElement> dropdownList = _driver.FindElements(LanguageOptionsBy);
-            foreach (IWebElement i in dropdownList)
+            IList<IWebElement> getDropdownList = _driver.FindElements(by);
+            foreach (IWebElement i in getDropdownList)
             {
                 //dropdownListArray[] = i.Text;
                 list.Add(i.Text);
             }
             string[] dropdownListArray = list.ToArray();
-            for (int i = 0; i < dropdownList.Count; i++)
+            for (int i = 0; i < getDropdownList.Count; i++)
             {
-                Assert.AreEqual(LangDrop[i], dropdownList[i].Text);
+                Assert.AreEqual(OptionsList[i], getDropdownList[i].Text);
             }
             // int iRowsCount = driver.FindElements(By.XPath("/html/body/..../table/tbody/tr")).Count;
+        }
+
+        public void VerifyChooseLanguage()
+        {
+            ClickAddNew();
+            VerifyDropdownOptions(LanguageOptionsBy, LangDrop);
+        }
+
+        public void VerifyChooseSkill()
+        {
+            _driver.FindElement(BtnAddNewSkillBy).Click();
+            VerifyDropdownOptions(SkillOptionsBy, SkillDrop);
         }
 
         public int GetRowCount(int tabIndex)    // 1: Languages, 2: Skills
@@ -205,17 +242,41 @@ namespace Marsqa1Specflow.Pages
             WaitUtil.WaitVisible(_driver, FieldLanguageBy).Clear();
             _driver.FindElement(FieldLanguageBy).SendKeys(randomString);
 
-            string langLevel = SelectRandomLangLevel(ChooseLanguageLastBy);
+            string langLevel = SelectRandomLevel(ChooseLanguageLastBy, LangDrop);
             Thread.Sleep(1000);
             _driver.FindElement(BtnUpdateBy).Click();
             Thread.Sleep(1000);
-            //VerifyBubble(randomString, "updated");
+            VerifyBubble(randomString, "updated");
 
             return new Tuple<string, string>(randomString, langLevel);
         }
 
-        public void VerifyBubble(string expectedLang, string action ) // action: updated, deleted, added
+        public Tuple<string, string> UpdateLastSkill() // TODO, just copy pasted, need to update
         {
+            _driver.FindElement(IconPencilLastSkillBy).Click();
+            Thread.Sleep(1000);
+
+            string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+            Random random = new Random();
+            int length = random.Next(3, 21); // 21 is exclusive, so it generates number from 3 to 20
+            // Generate the random string
+            string randomString = new string(Enumerable.Range(0, length)
+                                      .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
+            WaitUtil.WaitVisible(_driver, FieldSkillBy).Clear();
+            _driver.FindElement(FieldSkillBy).SendKeys(randomString);
+
+            string skillLevel = SelectRandomLevel(ChooseSkillBy, SkillDrop);
+            Thread.Sleep(1000);
+            _driver.FindElement(BtnUpdateBy).Click();
+            Thread.Sleep(1000);
+            VerifyBubble(randomString, "updated");
+
+            return new Tuple<string, string>(randomString, skillLevel);
+        }
+
+        public void VerifyBubble(string expectedName, string action) // action: updated, deleted, added
+        {
+            string tab = _driver.FindElement(ActiveTabBy).Text.ToLower(); // languages, skills
             IWebElement bubble;
             string bgcolor, popupMsg;
 
@@ -226,13 +287,14 @@ namespace Marsqa1Specflow.Pages
             switch (action)
             {
                 case "updated":
-                    Assert.AreEqual($"{expectedLang} has been updated to your languages", popupMsg);
+                    Assert.AreEqual($"{expectedName} has been updated to your {tab}", popupMsg);
                     break;
                 case "added":
-                    Assert.AreEqual($"{expectedLang} has been added to your languages", popupMsg);
+                    Assert.AreEqual($"{expectedName} has been added to your {tab}", popupMsg);
                     break;
                 case "deleted":
-                    Assert.AreEqual($"{expectedLang} has been deleted from your languages", popupMsg);
+                    if (tab == "languages") { Assert.AreEqual($"{expectedName} has been deleted from your languages", popupMsg); }
+                    else if (tab == "skills") { Assert.AreEqual($"{expectedName} has been deleted", popupMsg); }
                     break;
                 default:
                     Assert.Fail();
@@ -241,23 +303,5 @@ namespace Marsqa1Specflow.Pages
             Assert.AreEqual(popupSuccessColor, bgcolor);
         }
 
-        public void VerifyChooseSkill()
-        {
-            ClickAddNew();
-
-            List<string> list = new List<string>();
-            IList<IWebElement> dropdownList = _driver.FindElements(LanguageOptionsBy);
-            foreach (IWebElement i in dropdownList)
-            {
-                //dropdownListArray[] = i.Text;
-                list.Add(i.Text);
-            }
-            string[] dropdownListArray = list.ToArray();
-            for (int i = 0; i < dropdownList.Count; i++)
-            {
-                Assert.AreEqual(LangDrop[i], dropdownList[i].Text);
-            }
-            // int iRowsCount = driver.FindElements(By.XPath("/html/body/..../table/tbody/tr")).Count;
-        }
     }
 }
