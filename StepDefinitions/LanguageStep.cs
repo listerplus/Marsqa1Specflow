@@ -18,8 +18,6 @@ namespace Marsqa1Specflow.StepDefinitions
         [Given(@"User at Profile Page")]
         public void NavigateProfilePage()
         {
-            AppConfig config = AppConfig.LoadConfiguration();
-            driver.Navigate().GoToUrl(config.Url);
             HomePage homepage = new HomePage(driver);
             ProfilePage profilepage = new ProfilePage(driver);
             if (!profilepage.isAtProfilePage() ) {
@@ -38,11 +36,20 @@ namespace Marsqa1Specflow.StepDefinitions
         [Given(@"There are 3 or less languages added")]
         public void SetThreeOrLessLanguages()
         {
-            //TODO
             ProfilePage profilepage = new ProfilePage(driver);
             int numOfRows = profilepage.GetRowCount(1);
             if (numOfRows > 3) { profilepage.DeleteLastRow(1); }
         }
+
+        [When(@"Add New button is pressed")]
+        public void ClickAddNewButton()
+        {
+            ProfilePage profilepage = new ProfilePage(driver);
+            int numOfRows = profilepage.GetRowCount(1);
+            if (numOfRows > 3) { profilepage.DeleteLastRow(1); }
+            profilepage.ClickAddNew();
+        }
+
 
         [Then(@"Choose Language dropdown has four level options")]
         public void VerifyLanguageOptions()
@@ -95,5 +102,25 @@ namespace Marsqa1Specflow.StepDefinitions
             int newRowCount = profilepage.GetRowCount(1);
             Assert.AreEqual(rowCount - 1, newRowCount);
         }
+
+        [When(@"There are four languages")]
+        public void WhenThereAreFourLanguages()
+        {
+            ProfilePage profilepage = new ProfilePage(driver);
+            int numOfRows = profilepage.GetRowCount(1);
+            while (numOfRows < 4) 
+            { 
+                profilepage.AddRandomLanguage();
+                numOfRows += 1;
+            }
+        }
+
+        [Then(@"User is unable to add more language")]
+        public void VerifyAddNewNotPresent()
+        {
+            ProfilePage profilepage = new ProfilePage(driver);
+            Assert.False(profilepage.IsElementPresent(ProfilePage.BtnAddNewLanguageBy));
+        }
+
     }
 }
