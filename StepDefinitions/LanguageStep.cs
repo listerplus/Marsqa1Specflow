@@ -57,7 +57,7 @@ namespace Marsqa1Specflow.StepDefinitions
             // Adding specific language should have been tested manually
             ProfilePage profilepage = new ProfilePage(driver);
             var langTuple = profilepage.AddRandomLanguage();
-            bool value = profilepage.IsLanguagePresent(langTuple.Item1, langTuple.Item2);
+            bool value = profilepage.IsLanguageOrSkillPresent(1, langTuple.Item1, langTuple.Item2);
             Assert.IsTrue(value);
         }
 
@@ -81,7 +81,7 @@ namespace Marsqa1Specflow.StepDefinitions
             int numRows = profilepage.GetRowCount(1);
 
             var langTuple = profilepage.UpdateLastLanguage();
-            bool value = profilepage.IsLanguagePresent(langTuple.Item1, langTuple.Item2, numRows);
+            bool value = profilepage.IsLanguageOrSkillPresent(1, langTuple.Item1, langTuple.Item2, numRows);
             Assert.IsTrue(value);
         }
 
