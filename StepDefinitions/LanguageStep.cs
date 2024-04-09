@@ -9,17 +9,19 @@ namespace Marsqa1Specflow.StepDefinitions
     public class LanguageStep
     {
         private IWebDriver driver;
+        HomePage homepage;
+        ProfilePage profilepage;
 
         public LanguageStep(IWebDriver driver)
         {
             this.driver = driver;
+            homepage = new HomePage(driver);
+            profilepage = new ProfilePage(driver);
         }
 
         [Given(@"User at Profile Page")]
         public void NavigateProfilePage()
         {
-            HomePage homepage = new HomePage(driver);
-            ProfilePage profilepage = new ProfilePage(driver);
             if (!profilepage.isAtProfilePage() ) {
                 homepage.Login();
             }
@@ -29,14 +31,12 @@ namespace Marsqa1Specflow.StepDefinitions
         [Given(@"User click Language Tab")]
         public void ClickLanguageTab()
         {
-            ProfilePage profilepage = new ProfilePage(driver);
             profilepage.ClickLanguageTab();
         }
 
         [Given(@"There are 3 or less languages added")]
         public void SetThreeOrLessLanguages()
         {
-            ProfilePage profilepage = new ProfilePage(driver);
             int numOfRows = profilepage.GetRowCount(1);
             if (numOfRows > 3) { profilepage.DeleteLastRow(1); }
         }
@@ -44,7 +44,6 @@ namespace Marsqa1Specflow.StepDefinitions
         [When(@"Add New button is pressed")]
         public void ClickAddNewButton()
         {
-            ProfilePage profilepage = new ProfilePage(driver);
             int numOfRows = profilepage.GetRowCount(1);
             if (numOfRows > 3) { profilepage.DeleteLastRow(1); }
             profilepage.ClickAddNew();
@@ -54,7 +53,6 @@ namespace Marsqa1Specflow.StepDefinitions
         [Then(@"Choose Language dropdown has four level options")]
         public void VerifyLanguageOptions()
         {
-            ProfilePage profilepage = new ProfilePage(driver);
             profilepage.VerifyChooseLanguage();
         }
 
@@ -62,7 +60,6 @@ namespace Marsqa1Specflow.StepDefinitions
         public void VerifyAddLanguage()
         {
             // Adding specific language should have been tested manually
-            ProfilePage profilepage = new ProfilePage(driver);
             var langTuple = profilepage.AddRandomLanguage();
             bool value = profilepage.IsLanguageOrSkillPresent(1, langTuple.Item1, langTuple.Item2);
             Assert.IsTrue(value);
@@ -71,7 +68,6 @@ namespace Marsqa1Specflow.StepDefinitions
         [Given(@"Atleast one language present")]
         public void AtleastOneLanguage()
         {
-            ProfilePage profilepage = new ProfilePage(driver);
             int numRows = profilepage.GetRowCount(1);
             Console.WriteLine($"Num of Lang rows: {numRows}");
             if (numRows == 0)
@@ -81,10 +77,20 @@ namespace Marsqa1Specflow.StepDefinitions
             }
         }
 
+        [Given(@"One language is present")]
+        public void OneLanguagePresent()
+        {
+            int numRows = profilepage.GetRowCount(1);
+            //Console.WriteLine($"Num of Lang rows: {numRows}");
+            if (numRows < 4)
+            {
+                profilepage.AddRandomLanguage();
+            }
+        }
+
         [Then(@"User is able to Update Language")]
         public void VerifyUpdateLanguage()
         {
-            ProfilePage profilepage = new ProfilePage(driver);
             int numRows = profilepage.GetRowCount(1);
 
             var langTuple = profilepage.UpdateLastLanguage();
@@ -95,7 +101,6 @@ namespace Marsqa1Specflow.StepDefinitions
         [Then(@"User is able to Delete Language")]
         public void VerifyDeleteLanguage()
         {
-            ProfilePage profilepage = new ProfilePage(driver);
             int rowCount = profilepage.GetRowCount(1);
 
             profilepage.DeleteLastRow(1);
@@ -106,7 +111,6 @@ namespace Marsqa1Specflow.StepDefinitions
         [When(@"There are four languages")]
         public void WhenThereAreFourLanguages()
         {
-            ProfilePage profilepage = new ProfilePage(driver);
             int numOfRows = profilepage.GetRowCount(1);
             while (numOfRows < 4) 
             { 
@@ -118,8 +122,32 @@ namespace Marsqa1Specflow.StepDefinitions
         [Then(@"User is unable to add more language")]
         public void VerifyAddNewNotPresent()
         {
-            ProfilePage profilepage = new ProfilePage(driver);
             Assert.False(profilepage.IsElementPresent(ProfilePage.BtnAddNewLanguageBy));
+
+            // Remove added languages
+            profilepage.Remove(1);
+            profilepage.Remove(1);
+            profilepage.Remove(1);
+            profilepage.Remove(1);
+        }
+
+        [When(@"User adds language: (.*) (.*)")]
+        public void AddLanguage(string language, string level)
+        {
+            profilepage.AddLanguage(language, level);
+        }
+
+        [Then(@"User is able to see Language details: (.*) (.*)")]
+        public void VerifyLanguagePresent(string language, string level)
+        {
+            bool value = profilepage.IsLanguageOrSkillPresent(1, language, level);
+            Assert.IsTrue(value); 
+        }
+
+        [AfterScenario("removeLanguageTearDown")]
+        public void RemoveLanguage()
+        {
+            profilepage.Remove(1);
         }
 
     }
