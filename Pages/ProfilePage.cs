@@ -1,4 +1,6 @@
-﻿using Marsqa1Specflow.Utilities;
+﻿using System;
+using System.Reflection.Metadata.Ecma335;
+using Marsqa1Specflow.Utilities;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -22,6 +24,7 @@ namespace Marsqa1Specflow.Pages
         public static By BtnAddLanguageBy = By.XPath("//div[@data-tab='first']//input[@value='Add']");
         public static By BtnAddSkillBy = By.XPath("//div[@data-tab='second']//input[@value='Add']");
         public static By BtnCancelLanguageBy = By.XPath("//div[@data-tab='first']//input[@value='Cancel']");
+        public static By IconRemoveLanguageBy = By.XPath("//div[@data-tab='first']//table/tbody//i[@class='remove icon']");
         public static By IconPencilLastBy = By.XPath("//table[1]/tbody[last()]//i[@class='outline write icon']");
         public static By IconRemoveLastBy = By.XPath("//table[1]/tbody[last()]//i[@class='remove icon']");
         public static By IconPencilLastSkillBy = By.XPath("//div[@data-tab='second']//table/tbody[last()]//i[@class='outline write icon']");
@@ -90,6 +93,25 @@ namespace Marsqa1Specflow.Pages
             SelectElement dropDown = new SelectElement(_driver.FindElement(by));
             dropDown.SelectByValue(dropDownList[index]);
             return dropDownList[index];
+        }
+
+        public void AddLanguage(string language, string level)
+        {
+            // Click Add New button
+            _driver.FindElement(BtnAddNewLanguageBy).Click();
+            Thread.Sleep(1000);
+            WaitUtil.WaitVisible(_driver, FieldLanguageBy).SendKeys(language);
+
+            SelectElement dropDown = new SelectElement(_driver.FindElement(ChooseLanguageBy));
+            dropDown.SelectByValue(level);
+            _driver.FindElement(BtnAddLanguageBy).Click();
+            Thread.Sleep(1000);
+        }
+
+        public void Remove(int tabIndex)
+        {
+            _driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody//i[@class='remove icon']")).Click();
+            Thread.Sleep(1000);
         }
 
         public Tuple<string, string> AddRandomLanguage()
