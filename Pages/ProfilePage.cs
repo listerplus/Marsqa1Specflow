@@ -9,10 +9,10 @@ namespace Marsqa1Specflow.Pages
 {
     public class ProfilePage
     {
-        private readonly IWebDriver _driver;
+        private readonly IWebDriver driver;
         public ProfilePage(IWebDriver driver)
         {
-            this._driver = driver;
+            this.driver = driver;
         }
 
         // By Locators
@@ -53,24 +53,24 @@ namespace Marsqa1Specflow.Pages
         // Methods
         public void ClickSkillsTab()
         {
-            WaitUtil.WaitVisible(_driver, TabSkillsBy).Click();
+            WaitUtil.WaitVisible(driver, TabSkillsBy).Click();
         }
 
         public void ClickLanguageTab()
         {
-            _driver.FindElement(TabLanguagesBy).Click();
+            driver.FindElement(TabLanguagesBy).Click();
         }
 
         public void ClickAddNew()
         {
-            _driver.FindElement(BtnAddNewLanguageBy).Click();
+            driver.FindElement(BtnAddNewLanguageBy).Click();
         }
 
         public bool IsElementPresent(By by)
         {
             try
             {
-                _driver.FindElement(by);
+                driver.FindElement(by);
                 return true;
             }
             catch (NoSuchElementException)
@@ -90,7 +90,7 @@ namespace Marsqa1Specflow.Pages
             // Select any Language Level
             Random random = new Random();
             int index = random.Next(1, dropDownList.Count());
-            SelectElement dropDown = new SelectElement(_driver.FindElement(by));
+            SelectElement dropDown = new SelectElement(driver.FindElement(by));
             dropDown.SelectByValue(dropDownList[index]);
             return dropDownList[index];
         }
@@ -98,26 +98,26 @@ namespace Marsqa1Specflow.Pages
         public void AddLanguage(string language, string level)
         {
             // Click Add New button
-            _driver.FindElement(BtnAddNewLanguageBy).Click();
+            driver.FindElement(BtnAddNewLanguageBy).Click();
             Thread.Sleep(1000);
-            WaitUtil.WaitVisible(_driver, FieldLanguageBy).SendKeys(language);
+            WaitUtil.WaitVisible(driver, FieldLanguageBy).SendKeys(language);
 
-            SelectElement dropDown = new SelectElement(_driver.FindElement(ChooseLanguageBy));
+            SelectElement dropDown = new SelectElement(driver.FindElement(ChooseLanguageBy));
             dropDown.SelectByValue(level);
-            _driver.FindElement(BtnAddLanguageBy).Click();
+            driver.FindElement(BtnAddLanguageBy).Click();
             Thread.Sleep(1000);
         }
 
         public void Remove(int tabIndex)
         {
-            _driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody//i[@class='remove icon']")).Click();
+            driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody//i[@class='remove icon']")).Click();
             Thread.Sleep(1000);
         }
 
         public Tuple<string, string> AddRandomLanguage()
         {
             // Click Add New button
-            _driver.FindElement(BtnAddNewLanguageBy).Click();
+            driver.FindElement(BtnAddNewLanguageBy).Click();
             Thread.Sleep(1000);
 
             string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -126,10 +126,10 @@ namespace Marsqa1Specflow.Pages
             // Generate the random string
             string randomString = new string(Enumerable.Range(0, length)
                                       .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
-            WaitUtil.WaitVisible(_driver, FieldLanguageBy).SendKeys(randomString);
+            WaitUtil.WaitVisible(driver, FieldLanguageBy).SendKeys(randomString);
 
             string langLevel = SelectRandomLevel(ChooseLanguageBy, LangDrop);
-            _driver.FindElement(BtnAddLanguageBy).Click();
+            driver.FindElement(BtnAddLanguageBy).Click();
             Thread.Sleep(1000);
 
             return new Tuple<string, string> (randomString, langLevel);
@@ -139,7 +139,7 @@ namespace Marsqa1Specflow.Pages
         public Tuple<string, string> AddRandomSkill()
         {
             // Click Add New button
-            _driver.FindElement(BtnAddNewSkillBy).Click();
+            driver.FindElement(BtnAddNewSkillBy).Click();
             Thread.Sleep(1000);
 
             string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -148,10 +148,10 @@ namespace Marsqa1Specflow.Pages
             // Generate the random string
             string randomString = new string(Enumerable.Range(0, length)
                                       .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
-            WaitUtil.WaitVisible(_driver, FieldSkillBy).SendKeys(randomString);
+            WaitUtil.WaitVisible(driver, FieldSkillBy).SendKeys(randomString);
 
             string skillLevel = SelectRandomLevel(ChooseSkillBy, SkillDrop);
-            _driver.FindElement(BtnAddSkillBy).Click();
+            driver.FindElement(BtnAddSkillBy).Click();
             Thread.Sleep(1000);
 
             return new Tuple<string, string>(randomString, skillLevel);
@@ -170,8 +170,8 @@ namespace Marsqa1Specflow.Pages
                 {
                     try
                     {
-                        getName = _driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{i}]/tr/td[1]")).Text;
-                        getLevel = _driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{i}]/tr/td[2]")).Text;
+                        getName = driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{i}]/tr/td[1]")).Text;
+                        getLevel = driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{i}]/tr/td[2]")).Text;
                         //Console.WriteLine($"Lang: {getLang}, Level: {getLevel}");
                         if (name.Equals(getName) && (level.Equals(getLevel)))
                         {
@@ -188,8 +188,8 @@ namespace Marsqa1Specflow.Pages
             }
             else
             {
-                getName = WaitUtil.WaitVisible(_driver, By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{rowNum}]/tr/td[1]")).Text;
-                getLevel = WaitUtil.WaitVisible(_driver, By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{rowNum}]/tr/td[2]")).Text;
+                getName = WaitUtil.WaitVisible(driver, By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{rowNum}]/tr/td[1]")).Text;
+                getLevel = WaitUtil.WaitVisible(driver, By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[{rowNum}]/tr/td[2]")).Text;
                 Console.WriteLine($"Retrieved [row {rowNum}]: {getName}, Level: {getLevel}");
                 if (name.Equals(getName) && (level.Equals(getLevel))) { isPresent = true; }
             }
@@ -200,7 +200,7 @@ namespace Marsqa1Specflow.Pages
         public void VerifyDropdownOptions(By by, string[] OptionsList)
         {
             List<string> list = new List<string>();
-            IList<IWebElement> getDropdownList = _driver.FindElements(by);
+            IList<IWebElement> getDropdownList = driver.FindElements(by);
             foreach (IWebElement i in getDropdownList)
             {
                 //dropdownListArray[] = i.Text;
@@ -222,7 +222,7 @@ namespace Marsqa1Specflow.Pages
 
         public void VerifyChooseSkill()
         {
-            _driver.FindElement(BtnAddNewSkillBy).Click();
+            driver.FindElement(BtnAddNewSkillBy).Click();
             VerifyDropdownOptions(SkillOptionsBy, SkillDrop);
         }
 
@@ -234,10 +234,10 @@ namespace Marsqa1Specflow.Pages
                 case 1:
                     //div[@data-tab='first']//table/tbody
                     // decimal numOfRows = selenium.GetXpathCount($"//div[@data-tab='first']//table/tbody");
-                    numOfRows = _driver.FindElements(LanguageRowsBy).Count;
+                    numOfRows = driver.FindElements(LanguageRowsBy).Count;
                     break;
                 case 2:
-                    numOfRows = _driver.FindElements(SkillsRowsBy).Count;
+                    numOfRows = driver.FindElements(SkillsRowsBy).Count;
                     break;
             }
             return numOfRows;
@@ -246,13 +246,13 @@ namespace Marsqa1Specflow.Pages
         public void DeleteLastRow(int tabIndex)    // 1: Languages, 2: Skills
         {
             //Console.WriteLine($"Tab value: {tabIndexNames[tabIndex]}");
-            _driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[last()]//i[@class='remove icon']")).Click();
+            driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody[last()]//i[@class='remove icon']")).Click();
             Thread.Sleep(1000);
         }
 
         public Tuple<string, string> UpdateLastLanguage()
         {
-            _driver.FindElement(IconPencilLastBy).Click();
+            driver.FindElement(IconPencilLastBy).Click();
             Thread.Sleep(1000);
 
             string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -261,12 +261,12 @@ namespace Marsqa1Specflow.Pages
             // Generate the random string
             string randomString = new string(Enumerable.Range(0, length)
                                       .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
-            WaitUtil.WaitVisible(_driver, FieldLanguageBy).Clear();
-            _driver.FindElement(FieldLanguageBy).SendKeys(randomString);
+            WaitUtil.WaitVisible(driver, FieldLanguageBy).Clear();
+            driver.FindElement(FieldLanguageBy).SendKeys(randomString);
 
             string langLevel = SelectRandomLevel(ChooseLanguageLastBy, LangDrop);
             Thread.Sleep(1000);
-            _driver.FindElement(BtnUpdateBy).Click();
+            driver.FindElement(BtnUpdateBy).Click();
             Thread.Sleep(1000);
             VerifyBubble(randomString, "updated");
 
@@ -275,7 +275,7 @@ namespace Marsqa1Specflow.Pages
 
         public Tuple<string, string> UpdateLastSkill() // TODO, just copy pasted, need to update
         {
-            _driver.FindElement(IconPencilLastSkillBy).Click();
+            driver.FindElement(IconPencilLastSkillBy).Click();
             Thread.Sleep(1000);
 
             string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -284,12 +284,12 @@ namespace Marsqa1Specflow.Pages
             // Generate the random string
             string randomString = new string(Enumerable.Range(0, length)
                                       .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
-            WaitUtil.WaitVisible(_driver, FieldSkillBy).Clear();
-            _driver.FindElement(FieldSkillBy).SendKeys(randomString);
+            WaitUtil.WaitVisible(driver, FieldSkillBy).Clear();
+            driver.FindElement(FieldSkillBy).SendKeys(randomString);
 
             string skillLevel = SelectRandomLevel(ChooseSkillBy, SkillDrop);
             Thread.Sleep(1000);
-            _driver.FindElement(BtnUpdateBy).Click();
+            driver.FindElement(BtnUpdateBy).Click();
             Thread.Sleep(1000);
             VerifyBubble(randomString, "updated");
 
@@ -298,11 +298,11 @@ namespace Marsqa1Specflow.Pages
 
         public void VerifyBubble(string expectedName, string action) // action: updated, deleted, added
         {
-            string tab = _driver.FindElement(ActiveTabBy).Text.ToLower(); // languages, skills
+            string tab = driver.FindElement(ActiveTabBy).Text.ToLower(); // languages, skills
             IWebElement bubble;
             string bgcolor, popupMsg;
 
-            bubble = WaitUtil.WaitVisible(_driver, By.XPath($"//div[@class='ns-box ns-growl ns-effect-jelly ns-type-success ns-show']/div"));
+            bubble = WaitUtil.WaitVisible(driver, By.XPath($"//div[@class='ns-box ns-growl ns-effect-jelly ns-type-success ns-show']/div"));
             popupMsg = bubble.Text;
             bgcolor = bubble.GetCssValue("color");
             Console.WriteLine($"color: {bgcolor}");

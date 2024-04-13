@@ -10,11 +10,11 @@ namespace Marsqa1Specflow.Pages
 {
     public class HomePage
     {
-        private readonly IWebDriver _driver;
+        private readonly IWebDriver driver;
 
         public HomePage(IWebDriver driver)
         {
-            this._driver = driver;
+            this.driver = driver;
         }
 
         // By Locators
@@ -30,15 +30,15 @@ namespace Marsqa1Specflow.Pages
         // Methods
         public void ClickSignIn()
         {
-            WaitUtil.WaitVisible(_driver, BtnSignInBy).Click();
+            WaitUtil.WaitVisible(driver, BtnSignInBy).Click();
         }
 
         public void Login()
         {
             ClickSignIn();
-            _driver.FindElement(FieldEmailBy).SendKeys(emailValid);
-            _driver.FindElement(FieldPasswordBy).SendKeys(passwordValid);
-            _driver.FindElement(BtnLoginBy).Click();
+            driver.FindElement(FieldEmailBy).SendKeys(emailValid);
+            driver.FindElement(FieldPasswordBy).SendKeys(passwordValid);
+            driver.FindElement(BtnLoginBy).Click();
         }
     }
 }
