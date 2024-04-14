@@ -16,7 +16,7 @@ namespace Marsqa1Specflow.Pages
         }
 
         // By Locators
-        public static By TabProfileBy = By.XPath("//a[@href='/Account/Profile']");
+        /*public static By TabProfileBy = By.XPath("//a[@href='/Account/Profile']");
         public static By TabLanguagesBy = By.XPath("//a[@data-tab='first']");
         public static By TabSkillsBy = By.XPath("//a[@data-tab='second']");
         public static By BtnAddNewLanguageBy = By.XPath("//div[@data-tab='first']//table//div[@class='ui teal button '][(text()='Add New')]");
@@ -40,7 +40,34 @@ namespace Marsqa1Specflow.Pages
         public static By SkillOptionsBy = By.XPath("//div[@data-tab='second']//select[@name='level']/option");
         public static By LanguageRowsBy = By.XPath("//div[@data-tab='first']//table/tbody");
         public static By SkillsRowsBy = By.XPath("//div[@data-tab='second']//table/tbody");
-        public static By ActiveTabBy = By.XPath("//a[@class='item active']");
+        public static By ActiveTabBy = By.XPath("//a[@class='item active']");*/
+
+        // Web Elements
+        public IWebElement TabProfile => WaitUtil.WaitVisible(driver, By.XPath("//a[@href='/Account/Profile']"));
+        public IWebElement TabLanguages => driver.FindElement(By.XPath("//a[@data-tab='first']"));
+        public IWebElement TabSkills => WaitUtil.WaitVisible(driver, By.XPath("//a[@data-tab='second']"));
+        public IWebElement BtnAddNewLanguage => driver.FindElement(By.XPath("//div[@data-tab='first']//table//div[@class='ui teal button '][(text()='Add New')]"));
+        public IWebElement BtnAddNewSkill => driver.FindElement(By.XPath("//div[@data-tab='second']//table//div[@class='ui teal button'][(text()='Add New')]"));
+        public IWebElement BtnAddLanguage => driver.FindElement(By.XPath("//div[@data-tab='first']//input[@value='Add']"));
+        public IWebElement BtnAddSkill => driver.FindElement(By.XPath("//div[@data-tab='second']//input[@value='Add']"));
+        public IWebElement BtnCancelLanguage => driver.FindElement(By.XPath("//div[@data-tab='first']//input[@value='Cancel']"));
+        public IWebElement IconRemoveLanguage => driver.FindElement(By.XPath("//div[@data-tab='first']//table/tbody//i[@class='remove icon']"));
+        public IWebElement IconPencilLast => driver.FindElement(By.XPath("//table[1]/tbody[last()]//i[@class='outline write icon']"));
+        public IWebElement IconRemoveLast => driver.FindElement(By.XPath("//table[1]/tbody[last()]//i[@class='remove icon']"));
+        public IWebElement IconPencilLastSkill => driver.FindElement(By.XPath("//div[@data-tab='second']//table/tbody[last()]//i[@class='outline write icon']"));
+        public IWebElement IconRemoveLastSkill => driver.FindElement(By.XPath("//div[@data-tab='second']//table/tbody[last()]//i[@class='remove icon']"));
+        public IWebElement FieldLanguage => WaitUtil.WaitVisible(driver, By.XPath("//input[@placeholder='Add Language']"));
+        public IWebElement ChooseLanguage => driver.FindElement(By.XPath("//select[@class='ui dropdown']"));
+        public IWebElement FieldLanguageLast => driver.FindElement(By.XPath("//table[1]/tbody[last()]//input[@placeholder='Add Language']"));
+        public IWebElement ChooseLanguageLast => driver.FindElement(By.XPath("//table[1]/tbody[last()]//select[@class='ui dropdown']"));
+        public IWebElement FieldSkill => WaitUtil.WaitVisible(driver, By.XPath("//input[@placeholder='Add Skill']"));
+        public IWebElement ChooseSkill => driver.FindElement(By.XPath("//select[@name='level']"));
+        public IWebElement BtnUpdate => driver.FindElement(By.XPath("//input[@value='Update']"));
+        public IList<IWebElement> LanguageOptions => driver.FindElements(By.XPath("//select[@class='ui dropdown']/option"));
+        public IList<IWebElement> SkillOptions => driver.FindElements(By.XPath("//div[@data-tab='second']//select[@name='level']/option"));
+        public IList<IWebElement> LanguageRows => driver.FindElements(By.XPath("//div[@data-tab='first']//table/tbody"));
+        public IList<IWebElement> SkillsRows => driver.FindElements(By.XPath("//div[@data-tab='second']//table/tbody"));
+        public IWebElement ActiveTab => driver.FindElement(By.XPath("//a[@class='item active']"));
 
         // Texts
         public string[] LangDrop = { "Choose Language Level", "Basic", "Conversational", "Fluent", "Native/Bilingual" };
@@ -53,17 +80,17 @@ namespace Marsqa1Specflow.Pages
         // Methods
         public void ClickSkillsTab()
         {
-            WaitUtil.WaitVisible(driver, TabSkillsBy).Click();
+            TabSkills.Click();
         }
 
         public void ClickLanguageTab()
         {
-            driver.FindElement(TabLanguagesBy).Click();
+            TabLanguages.Click();
         }
 
         public void ClickAddNew()
         {
-            driver.FindElement(BtnAddNewLanguageBy).Click();
+            BtnAddNewLanguage.Click();
         }
 
         public bool IsElementPresent(By by)
@@ -71,6 +98,7 @@ namespace Marsqa1Specflow.Pages
             try
             {
                 driver.FindElement(by);
+                //return element.Displayed;
                 return true;
             }
             catch (NoSuchElementException)
@@ -81,16 +109,21 @@ namespace Marsqa1Specflow.Pages
 
         public bool isAtProfilePage()
         {
-            return IsElementPresent(TabProfileBy);
+            return IsElementPresent(By.XPath("//a[@href='/Account/Profile']"));
         }
 
-        public string SelectRandomLevel(By by, string[] dropDownList)
+        public bool isBtnAddNewPresent()
+        {
+            return IsElementPresent(By.XPath("//div[@data-tab='first']//table//div[@class='ui teal button '][(text()='Add New')]"));
+        }
+
+        public string SelectRandomLevel(IWebElement element, string[] dropDownList)
         {
             // Make sure Add New Button is clicked and Language Level visible
             // Select any Language Level
             Random random = new Random();
             int index = random.Next(1, dropDownList.Count());
-            SelectElement dropDown = new SelectElement(driver.FindElement(by));
+            SelectElement dropDown = new SelectElement(element);
             dropDown.SelectByValue(dropDownList[index]);
             return dropDownList[index];
         }
@@ -98,26 +131,26 @@ namespace Marsqa1Specflow.Pages
         public void AddLanguage(string language, string level)
         {
             // Click Add New button
-            driver.FindElement(BtnAddNewLanguageBy).Click();
+            BtnAddNewLanguage.Click();
             Thread.Sleep(1000);
-            WaitUtil.WaitVisible(driver, FieldLanguageBy).SendKeys(language);
+            FieldLanguage.SendKeys(language);
 
-            SelectElement dropDown = new SelectElement(driver.FindElement(ChooseLanguageBy));
+            SelectElement dropDown = new SelectElement(ChooseLanguage);
             dropDown.SelectByValue(level);
-            driver.FindElement(BtnAddLanguageBy).Click();
+            BtnAddLanguage.Click();
             Thread.Sleep(1000);
         }
 
         public void AddSkill(string skill, string level)
         {
             // Click Add New button
-            driver.FindElement(BtnAddNewSkillBy).Click();
+            BtnAddNewSkill.Click();
             Thread.Sleep(1000);
-            WaitUtil.WaitVisible(driver, FieldSkillBy).SendKeys(skill);
+            FieldSkill.SendKeys(skill);
 
-            SelectElement dropDown = new SelectElement(driver.FindElement(ChooseSkillBy));
+            SelectElement dropDown = new SelectElement(ChooseSkill);
             dropDown.SelectByValue(level);
-            driver.FindElement(BtnAddSkillBy).Click();
+            BtnAddSkill.Click();
             Thread.Sleep(1000);
         }
 
@@ -130,7 +163,7 @@ namespace Marsqa1Specflow.Pages
         public Tuple<string, string> AddRandomLanguage()
         {
             // Click Add New button
-            driver.FindElement(BtnAddNewLanguageBy).Click();
+            BtnAddNewLanguage.Click();
             Thread.Sleep(1000);
 
             string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -139,10 +172,10 @@ namespace Marsqa1Specflow.Pages
             // Generate the random string
             string randomString = new string(Enumerable.Range(0, length)
                                       .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
-            WaitUtil.WaitVisible(driver, FieldLanguageBy).SendKeys(randomString);
+            FieldLanguage.SendKeys(randomString);
 
-            string langLevel = SelectRandomLevel(ChooseLanguageBy, LangDrop);
-            driver.FindElement(BtnAddLanguageBy).Click();
+            string langLevel = SelectRandomLevel(ChooseLanguage, LangDrop);
+            BtnAddLanguage.Click();
             Thread.Sleep(1000);
 
             return new Tuple<string, string> (randomString, langLevel);
@@ -152,7 +185,7 @@ namespace Marsqa1Specflow.Pages
         public Tuple<string, string> AddRandomSkill()
         {
             // Click Add New button
-            driver.FindElement(BtnAddNewSkillBy).Click();
+            BtnAddNewSkill.Click();
             Thread.Sleep(1000);
 
             string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -161,10 +194,10 @@ namespace Marsqa1Specflow.Pages
             // Generate the random string
             string randomString = new string(Enumerable.Range(0, length)
                                       .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
-            WaitUtil.WaitVisible(driver, FieldSkillBy).SendKeys(randomString);
+            FieldSkill.SendKeys(randomString);
 
-            string skillLevel = SelectRandomLevel(ChooseSkillBy, SkillDrop);
-            driver.FindElement(BtnAddSkillBy).Click();
+            string skillLevel = SelectRandomLevel(ChooseSkill, SkillDrop);
+            BtnAddSkill.Click();
             Thread.Sleep(1000);
 
             return new Tuple<string, string>(randomString, skillLevel);
@@ -210,19 +243,19 @@ namespace Marsqa1Specflow.Pages
             return isPresent;
         }
 
-        public void VerifyDropdownOptions(By by, string[] OptionsList)
+        public void VerifyDropdownOptions(IList<IWebElement> dropdownList, string[] OptionsList)
         {
             List<string> list = new List<string>();
-            IList<IWebElement> getDropdownList = driver.FindElements(by);
-            foreach (IWebElement i in getDropdownList)
+            //IList<IWebElement> getDropdownList = driver.FindElements(by);
+            foreach (IWebElement i in dropdownList)
             {
                 //dropdownListArray[] = i.Text;
                 list.Add(i.Text);
             }
             string[] dropdownListArray = list.ToArray();
-            for (int i = 0; i < getDropdownList.Count; i++)
+            for (int i = 0; i < dropdownList.Count; i++)
             {
-                Assert.AreEqual(OptionsList[i], getDropdownList[i].Text);
+                Assert.AreEqual(OptionsList[i], dropdownList[i].Text);
             }
             // int iRowsCount = driver.FindElements(By.XPath("/html/body/..../table/tbody/tr")).Count;
         }
@@ -230,13 +263,13 @@ namespace Marsqa1Specflow.Pages
         public void VerifyChooseLanguage()
         {
             ClickAddNew();
-            VerifyDropdownOptions(LanguageOptionsBy, LangDrop);
+            VerifyDropdownOptions(LanguageOptions, LangDrop);
         }
 
         public void VerifyChooseSkill()
         {
-            driver.FindElement(BtnAddNewSkillBy).Click();
-            VerifyDropdownOptions(SkillOptionsBy, SkillDrop);
+            BtnAddNewSkill.Click();
+            VerifyDropdownOptions(SkillOptions, SkillDrop);
         }
 
         public int GetRowCount(int tabIndex)    // 1: Languages, 2: Skills
@@ -247,10 +280,10 @@ namespace Marsqa1Specflow.Pages
                 case 1:
                     //div[@data-tab='first']//table/tbody
                     // decimal numOfRows = selenium.GetXpathCount($"//div[@data-tab='first']//table/tbody");
-                    numOfRows = driver.FindElements(LanguageRowsBy).Count;
+                    numOfRows = LanguageRows.Count;
                     break;
                 case 2:
-                    numOfRows = driver.FindElements(SkillsRowsBy).Count;
+                    numOfRows = SkillsRows.Count;
                     break;
             }
             return numOfRows;
@@ -265,7 +298,7 @@ namespace Marsqa1Specflow.Pages
 
         public Tuple<string, string> UpdateLastLanguage()
         {
-            driver.FindElement(IconPencilLastBy).Click();
+            IconPencilLast.Click();
             Thread.Sleep(1000);
 
             string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -274,12 +307,12 @@ namespace Marsqa1Specflow.Pages
             // Generate the random string
             string randomString = new string(Enumerable.Range(0, length)
                                       .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
-            WaitUtil.WaitVisible(driver, FieldLanguageBy).Clear();
-            driver.FindElement(FieldLanguageBy).SendKeys(randomString);
+            FieldLanguage.Clear();
+            FieldLanguage.SendKeys(randomString);
 
-            string langLevel = SelectRandomLevel(ChooseLanguageLastBy, LangDrop);
+            string langLevel = SelectRandomLevel(ChooseLanguageLast, LangDrop);
             Thread.Sleep(1000);
-            driver.FindElement(BtnUpdateBy).Click();
+            BtnUpdate.Click();
             Thread.Sleep(1000);
             VerifyBubble(randomString, "updated");
 
@@ -288,7 +321,7 @@ namespace Marsqa1Specflow.Pages
 
         public Tuple<string, string> UpdateLastSkill() // TODO, just copy pasted, need to update
         {
-            driver.FindElement(IconPencilLastSkillBy).Click();
+            IconPencilLastSkill.Click();
             Thread.Sleep(1000);
 
             string charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
@@ -297,12 +330,12 @@ namespace Marsqa1Specflow.Pages
             // Generate the random string
             string randomString = new string(Enumerable.Range(0, length)
                                       .Select(_ => charSet[random.Next(charSet.Length)]).ToArray());
-            WaitUtil.WaitVisible(driver, FieldSkillBy).Clear();
-            driver.FindElement(FieldSkillBy).SendKeys(randomString);
+            FieldSkill.Clear();
+            FieldSkill.SendKeys(randomString);
 
-            string skillLevel = SelectRandomLevel(ChooseSkillBy, SkillDrop);
+            string skillLevel = SelectRandomLevel(ChooseSkill, SkillDrop);
             Thread.Sleep(1000);
-            driver.FindElement(BtnUpdateBy).Click();
+            BtnUpdate.Click();
             Thread.Sleep(1000);
             VerifyBubble(randomString, "updated");
 
@@ -311,7 +344,7 @@ namespace Marsqa1Specflow.Pages
 
         public void VerifyBubble(string expectedName, string action) // action: updated, deleted, added
         {
-            string tab = driver.FindElement(ActiveTabBy).Text.ToLower(); // languages, skills
+            string tab = ActiveTab.Text.ToLower(); // languages, skills
             IWebElement bubble;
             string bgcolor, popupMsg;
 

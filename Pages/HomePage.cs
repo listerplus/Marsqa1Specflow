@@ -18,10 +18,16 @@ namespace Marsqa1Specflow.Pages
         }
 
         // By Locators
-        public static By BtnSignInBy = By.XPath("//a[@class='item'][(text()='Sign In')]");
-        public static By FieldEmailBy = By.XPath("//input[@name='email']");
-        public static By FieldPasswordBy = By.XPath("//input[@name='password']");
-        public static By BtnLoginBy = By.XPath("//button[@class='fluid ui teal button']");
+        //public static By BtnSignInBy = By.XPath("//a[@class='item'][(text()='Sign In')]");
+        //public static By FieldEmailBy = By.XPath("//input[@name='email']");
+        //public static By FieldPasswordBy = By.XPath("//input[@name='password']");
+        //public static By BtnLoginBy = By.XPath("//button[@class='fluid ui teal button']");
+
+        // Web Elements
+        public IWebElement BtnSignIn => WaitUtil.WaitVisible(driver, By.XPath("//a[@class='item'][(text()='Sign In')]"));
+        public IWebElement FieldEmail => driver.FindElement(By.XPath("//input[@name='email']"));
+        public IWebElement FieldPassword => driver.FindElement(By.XPath("//input[@name='password']"));
+        public IWebElement BtnLogin => driver.FindElement(By.XPath("//button[@class='fluid ui teal button']"));
 
         // Text
         public readonly string emailValid = "one@test.com";
@@ -30,15 +36,15 @@ namespace Marsqa1Specflow.Pages
         // Methods
         public void ClickSignIn()
         {
-            WaitUtil.WaitVisible(driver, BtnSignInBy).Click();
+            BtnSignIn.Click();
         }
 
         public void Login()
         {
             ClickSignIn();
-            driver.FindElement(FieldEmailBy).SendKeys(emailValid);
-            driver.FindElement(FieldPasswordBy).SendKeys(passwordValid);
-            driver.FindElement(BtnLoginBy).Click();
+            FieldEmail.SendKeys(emailValid);
+            FieldPassword.SendKeys(passwordValid);
+            BtnLogin.Click();
         }
     }
 }
