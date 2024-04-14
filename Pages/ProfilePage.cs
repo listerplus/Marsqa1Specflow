@@ -108,6 +108,19 @@ namespace Marsqa1Specflow.Pages
             Thread.Sleep(1000);
         }
 
+        public void AddSkill(string skill, string level)
+        {
+            // Click Add New button
+            driver.FindElement(BtnAddNewSkillBy).Click();
+            Thread.Sleep(1000);
+            WaitUtil.WaitVisible(driver, FieldSkillBy).SendKeys(skill);
+
+            SelectElement dropDown = new SelectElement(driver.FindElement(ChooseSkillBy));
+            dropDown.SelectByValue(level);
+            driver.FindElement(BtnAddSkillBy).Click();
+            Thread.Sleep(1000);
+        }
+
         public void Remove(int tabIndex)
         {
             driver.FindElement(By.XPath($"//div[@data-tab='{tabIndexNames[tabIndex]}']//table/tbody//i[@class='remove icon']")).Click();
