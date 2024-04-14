@@ -122,7 +122,7 @@ namespace Marsqa1Specflow.StepDefinitions
         [Then(@"User is unable to add more language")]
         public void VerifyAddNewNotPresent()
         {
-            Assert.False(profilepage.IsElementPresent(ProfilePage.BtnAddNewLanguageBy));
+            Assert.False(profilepage.isBtnAddNewPresent());
 
             // Remove added languages
             profilepage.Remove(1);
